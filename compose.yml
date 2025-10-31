@@ -1,0 +1,23 @@
+services:
+  # サービス名を 'rust-env' と定義します（名前は自由です）
+  rust-env:
+    
+    # 実行するイメージを指定
+    image: my-rust-env
+    # (もし 'my-rust-env' をビルドせず、Dockerfileから直接ビルドしたい場合)
+    # build: .  # ← image: の代わりにこれを有効化します
+
+    # '-it' と同じ設定
+    stdin_open: true  # -i (標準入力を開く)
+    tty: true         # -t (仮想Ttyを割り当てる)
+
+    # '-v $(pwd):/work' と同じ設定
+    volumes:
+      - .:/work  # '.' は 'docker-compose.yml' があるディレクトリを指します
+
+    # '--user $(id -u):$(id -g)' と同じ設定
+    # ホストOSの環境変数 ${UID} と ${GID} を参照します
+    user: "${HOST_UID}:${HOST_GID}"
+    
+    # Dockerfileで指定済みですが、明示的に作業ディレクトリを指定
+    working_dir: /work
