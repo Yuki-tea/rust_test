@@ -9,7 +9,9 @@ fn main() {
   if sixth == None{
     println!("「{}」の6番目の文字はありません", ok);
   }
-
+  
+  // "if let Some(a) = b"はもしbがSomeだったら
+  // その中身をaに取り出して{}内の処理をする
   if let Some(val) = &Some("中の値") {
     println!("{}をとりだしました", *val);
   }
