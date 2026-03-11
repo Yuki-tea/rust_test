@@ -1,0 +1,40 @@
+<!--Run wasm-pack build --target web -->
+<!-- Run npx serve . also -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vanilla Wasm Test</title>
+    <style>
+        body { font-family: sans-serif; padding: 2rem; }
+        #output { margin-top: 1rem; padding: 1rem; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h2>Vanilla HTML + Rust Wasm 🦀</h2>
+    <hr />
+    
+    <div id="output">Loading Rust Engine...</div>
+
+    <script type="module">
+        // 1. Import the initialization function AND your custom function
+        import init, { parse_markdown_to_html } from './pkg/wasm_parse.js';
+
+        async function runWasm() {
+            // 2. Boot up the Wasm virtual machine (fetches the .wasm binary)
+            await init();
+            
+            console.log("Wasm is loaded and ready!");
+
+            // 3. Call your Rust function!
+            const result = parse_markdown_to_html("hello from vanilla javascript!");
+            
+            // 4. Update the DOM
+            document.getElementById("output").innerHTML = result;
+        }
+
+        // Execute the function
+        runWasm();
+    </script>
+</body>
+</html>

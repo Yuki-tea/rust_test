@@ -1,3 +1,5 @@
+<!-- Run "wasm-pack build --target bundler" in Rust project -->
+<!-- "npm install /path/to/your/wasm_parser/pkg" -->
 "use client"; // This tells Next.js to run this in the browser
 
 import { useEffect, useState } from "react";
