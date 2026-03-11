@@ -1,28 +1,43 @@
 use std::time::Duration;
+use tokio::time::Instant; // This lets us measure a stopwatch!
 
-// A mock async function that simulates fetching data from a database
-async fn fetch_blog_post() -> String {
-    println!("   -> ⏳ Fetching data from database...");
-    
-    // We use tokio's sleep to simulate a 2-second database delay
-    tokio::time::sleep(Duration::from_secs(2)).await; 
-    
-    String::from("Rust Async is awesome!")
+// Simulate fetching a tech blog article
+async fn fetch_article() -> String {
+    println!("   -> 📄 Fetching article content...");
+    tokio::time::sleep(Duration::from_secs(2)).await;
+    String::from("Understanding Rust Async")
 }
 
-// The macro that boots up the engine!
+// Simulate fetching comments for the article
+async fn fetch_comments() -> u32 {
+    println!("   -> 💬 Fetching article comments...");
+    tokio::time::sleep(Duration::from_secs(2)).await;
+    42 // Returning 42 comments
+}
+
 #[tokio::main]
 async fn main() {
-    println!("--- Server Started ---");
+    println!("--- API Request Started ---");
+    let start_time = Instant::now(); // Start the stopwatch
 
-    // We create the lazy future (nothing happens yet)
-    let my_future = fetch_blog_post(); 
-    
-    println!("Future created, but we haven't awaited it yet.");
+    // 1. Create the lazy futures (the switches are currently OFF)
+    let article_future = fetch_article();
+    let comments_future = fetch_comments();
 
-    // Now we press the gas pedal!
-    let result = my_future.await; 
+    println!("Futures created. Flipping the switches AT THE SAME TIME...");
+
+    // 2. The Magic: tokio::join! runs both concurrently
+    // It waits for both to finish, and hands us back a tuple containing both results!
+    let (article, comments) = tokio::join!(article_future, comments_future);
+
+    // 3. Calculate total time taken
+    let elapsed = start_time.elapsed();
+
+    println!("✅ Response Ready!");
+    println!("Article: {}", article);
+    println!("Comment Count: {}", comments);
     
-    println!("✅ Result: {}", result);
-    println!("--- Server Ended ---");
+    // This will print something very close to 2.00 seconds, not 4.00!
+    println!("⏱️ Total Time: {:.2?}", elapsed); 
+    println!("--- API Request Ended ---");
 }
