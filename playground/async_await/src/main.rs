@@ -28,16 +28,32 @@
     // println!("--- Program Finished cleanly! ---");
 // }
 
+use std::sync::{Arc, Mutex};
 use std::thread;
 
 fn main() {
-    let mut counter = 0;
+    // 1. Wrap our zero inside a Mutex (for locking) and an Arc (for sharing)
+    let counter = Arc::new(Mutex::new(0));
     let mut handles = vec![];
 
     for _ in 0..10 {
-        let handle = thread::spawn(|| {
-            counter += 1;
+        // 2. We print a new "ticket" for each thread so they can find the counter
+        let counter_clone = Arc::clone(&counter);
+        
+        // 3. We MOVE the cloned ticket into the new thread
+        let handle = thread::spawn(move || {
+            // 4. THE TRANSACTION: Lock the Mutex, modify the data, and let it auto-unlock
+            let mut num = counter_clone.lock().unwrap();
+            *num += 1;
         });
         handles.push(handle);
     }
+
+    // Wait for all 10 chefs to finish their work
+    for handle in handles {
+        handle.join().unwrap();
+    }
+
+    // Read the final total!
+    println!("All threads finished! Final counter: {}", *counter.lock().unwrap());
 }
